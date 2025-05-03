@@ -4,74 +4,51 @@ using UnityEngine.Tilemaps;
 
 namespace Code
 {
-    public enum BiomeHeart
+    public class BiomeTileData
+    {
+        public Vector3Int Position { get; }
+        public int Temperature { get; private set; }
+        public BiomeHeart Heart { get; private set; }
+        public BiomeTile Type { get; private set; }
+        public TileBase Visual { get; private set; }
+
+        public bool IsSource => Heart != BiomeHeart.None;
+
+        public BiomeTileData(Vector3Int position, int initialTemperature, BiomeHeart heart, TileBase visual)
         {
-            None,
-            Hot,
-            Cold
+            Position = position;
+            Temperature = initialTemperature;
+            Visual = visual;
+
+            Type = DetermineBiomeTile(initialTemperature);
+            Heart = ValidateHeart(Type, heart);
         }
 
-        public enum BiomeTile
+        public void AddTemperature(int delta, System.Func<int, TileBase> visualResolver)
         {
-            Empty,
-            Hot,
-            Cold,
-            Green
+            Temperature += delta;
+            Type = DetermineBiomeTile(Temperature);
+            Heart = IsSource ? Heart : ValidateHeart(Type, BiomeHeart.None);
+            Visual = visualResolver?.Invoke(Temperature);
         }
 
-        public class BiomeTileData
+        private static BiomeTile DetermineBiomeTile(int temp)
         {
-            public Vector3Int position;
-            public int temperatureValue;
-
-            public BiomeHeart biomeHeart;
-            public BiomeTile biomeTile;
-            public TileBase tileVisual;
-
-            public bool IsSource => biomeHeart != BiomeHeart.None;
-
-            public BiomeTileData(Vector3Int pos, int temp, BiomeHeart heart, TileBase visual)
-            {
-                position = pos;
-                temperatureValue = temp;
-                tileVisual = visual;
-
-                biomeTile = DetermineBiomeTile(temp);
-                biomeHeart = ValidateHeart(biomeTile, heart);
-            }
-
-            public void UpdateTemperature(int delta, System.Func<int, TileBase> visualResolver)
-            {
-                temperatureValue += delta;
-
-                biomeTile = DetermineBiomeTile(temperatureValue);
-                biomeHeart = IsSource ? biomeHeart : ValidateHeart(biomeTile, BiomeHeart.None);
-                tileVisual = visualResolver?.Invoke(temperatureValue);
-            }
-
-            private BiomeTile DetermineBiomeTile(int temp)
-            {
-                if (temp > 0) return BiomeTile.Hot;
-                if (temp < 0) return BiomeTile.Cold;
-                if (temp == 0) return BiomeTile.Green;
-                return BiomeTile.Empty;
-            }
-
-            private BiomeHeart ValidateHeart(BiomeTile tile, BiomeHeart heart)
-            {
-                switch (tile)
-                {
-                    case BiomeTile.Hot:
-                        return heart == BiomeHeart.Hot ? BiomeHeart.Hot : BiomeHeart.None;
-                    case BiomeTile.Cold:
-                        return heart == BiomeHeart.Cold ? BiomeHeart.Cold : BiomeHeart.None;
-                    case BiomeTile.Green:
-                    case BiomeTile.Empty:
-                    default:
-                        return BiomeHeart.None;
-                }
-            }
+            if (temp == 0) return BiomeTile.Green;
+            return temp > 0 ? BiomeTile.Hot : BiomeTile.Cold;
         }
+
+        private static BiomeHeart ValidateHeart(BiomeTile tile, BiomeHeart heart)
+        {
+            return tile switch
+            {
+                BiomeTile.Hot => heart == BiomeHeart.Hot ? BiomeHeart.Hot : BiomeHeart.None,
+                BiomeTile.Cold => heart == BiomeHeart.Cold ? BiomeHeart.Cold : BiomeHeart.None,
+                _ => BiomeHeart.None,
+            };
+        }
+    }
+
     }
 
 

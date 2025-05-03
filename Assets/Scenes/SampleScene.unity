@@ -154,6 +154,7 @@ MonoBehaviour:
   tileHot: {fileID: 11400000, guid: 0e48a6ef7cccc2143903ae62794a6279, type: 2}
   tileCold: {fileID: 11400000, guid: 4da2d30e8bdf7214a88431b52cea97ed, type: 2}
   tileGreen: {fileID: 11400000, guid: 3ddbc59d1d3ce5942baf37f68ece9e88, type: 2}
+  temperatureLabeler: {fileID: 935393863}
 --- !u!156049354 &445002875
 Grid:
   m_ObjectHideFlags: 0
@@ -495,6 +496,7 @@ GameObject:
   - component: {fileID: 935393860}
   - component: {fileID: 935393859}
   - component: {fileID: 935393858}
+  - component: {fileID: 935393863}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -528,7 +530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
+  m_IgnoreReversedGraphics: 0
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
@@ -598,6 +600,21 @@ RectTransform:
   m_AnchoredPosition: {x: 960, y: 540}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &935393863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935393857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b71623adecd408e837c73033869a680, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilemap: {fileID: 1310132456}
+  labelPrefab: {fileID: 2622898111988345285, guid: 72568aeb6a4e596478fa75e6eaf5dc0f, type: 3}
+  biomeCreator: {fileID: 445002874}
 --- !u!1 &1310132455
 GameObject:
   m_ObjectHideFlags: 0
@@ -4609,7 +4626,7 @@ Tilemap:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: -13, y: -12, z: 0}
   m_Size: {x: 32, y: 26, z: 1}
-  m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
+  m_TileAnchor: {x: 0, y: 0, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1

@@ -7,14 +7,18 @@ namespace Code
     public class BiomeCreator : MonoBehaviour
     {
         [SerializeField] private Tilemap tilemap;
-        [SerializeField] private Grid grid;
         [SerializeField] private Tile tileBlack;
         [SerializeField] private Tile tileHot;
         [SerializeField] private Tile tileCold;
         [SerializeField] private Tile tileGreen;
 
+        [SerializeField] private TemperatureLabeler temperatureLabeler;
+
         private BiomeHeart _currentBiomeMode = BiomeHeart.Hot;
         private Dictionary<Vector3Int, BiomeTileData> biomeTiles = new();
+        
+        public Dictionary<Vector3Int, BiomeTileData> GetBiomeTiles() => biomeTiles;
+
 
         private void Update()
         {
@@ -33,7 +37,7 @@ namespace Code
             if (Input.GetMouseButtonDown(0))
             {
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector3Int cellPos = grid.WorldToCell(worldPos);
+                Vector3Int cellPos = tilemap.WorldToCell(worldPos);
                 cellPos.z = 0;
                 Debug.Log(cellPos);
 
@@ -45,20 +49,49 @@ namespace Code
 
         private void CreateBiomeArea(Vector3Int center, int radius)
         {
-            int baseTemp = _currentBiomeMode == BiomeHeart.Hot ? 3 : -3;
-            Tile centerTile = _currentBiomeMode == BiomeHeart.Hot ? tileHot : tileCold;
+            int sourceTemp = _currentBiomeMode == BiomeHeart.Hot ? 3 : -3;
+            TileBase sourceTile = _currentBiomeMode == BiomeHeart.Hot ? tileHot : tileCold;
 
-            biomeTiles[center] = new BiomeTileData(center, baseTemp, _currentBiomeMode, centerTile);
-            tilemap.SetTile(center, centerTile);
-            
-          
-              var fullArea = GetFlatTopHexRange(center, 2);
-              foreach (var cell in fullArea)
-              {
-                  tilemap.SetTile(cell, tileHot);
-              }
-          
+            biomeTiles[center] = new BiomeTileData(center, sourceTemp, _currentBiomeMode, sourceTile);
+            tilemap.SetTile(center, sourceTile);
+
+            for (int r = 1; r <= radius; r++)
+            {
+                int ringTemp = sourceTemp > 0 ? sourceTemp - r : sourceTemp + r;
+                foreach (var pos in GetFlatTopHexRing(center, r))
+                {
+                    if (!biomeTiles.ContainsKey(pos))
+                        biomeTiles[pos] = new BiomeTileData(pos, 0, BiomeHeart.None, tileBlack);
+
+                    biomeTiles[pos].AddTemperature(ringTemp, ResolveTileVisual);
+                }
+            }
+
+            UpdateTileVisuals();
+            temperatureLabeler?.UpdateLabels();
         }
+
+        
+        private TileBase ResolveTileVisual(int temp)
+        {
+            if (temp == 0) return tileGreen;
+            if (temp > 0) return tileHot;
+            return tileCold;
+        }
+
+        private void UpdateTileVisuals()
+        {
+            foreach (var pair in biomeTiles)
+            {
+                var tile = pair.Value;
+
+                // Do not overwrite source tiles (±3)
+                if (tile.IsSource && Mathf.Abs(tile.Temperature) == 3) continue;
+
+                tilemap.SetTile(tile.Position, tile.Visual);
+            }
+        }
+
 
         private static readonly Vector3Int[] EvenRowOffsets = new[]
         {

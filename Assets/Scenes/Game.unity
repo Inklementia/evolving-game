@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilemap: {fileID: 1310132456}
-  turretPrefab: {fileID: 4783263989095748580, guid: 1bd8751af11c30f499c3fbb934408048, type: 3}
+  turretTag: {fileID: 11400000, guid: 36b22cc3e4c41bf4fb4bcfbd7dbb7867, type: 2}
   greenTile: {fileID: 11400000, guid: 21729a9a0a5e1f04cbf4e1e783a086ab, type: 2}
   enablePlacementKey: 51
   mouseButton: 1

@@ -31,7 +31,7 @@ namespace Code
             if (canPlaceTurret && Input.GetMouseButtonDown(mouseButton))
             {
                 Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                worldPos.z = 0f;                                     3
+                worldPos.z = 0f;                                     
                 Vector3Int cell   = tilemap.WorldToCell(worldPos);
 
                 TryPlaceTurret(cell);

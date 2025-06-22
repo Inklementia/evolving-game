@@ -3,7 +3,7 @@ namespace Code
     public enum BiomeHeart
     {
         None,
-        Hot,
-        Cold
+        Volcano,
+        Iceberg
     }
 }

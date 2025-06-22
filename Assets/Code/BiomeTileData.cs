@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,26 +9,23 @@ namespace Code
         public int Temperature { get; private set; }
         public BiomeHeart Heart { get; private set; }
         public BiomeTile Type { get; private set; }
-        public TileBase Visual { get; private set; }
+        public TileBase Visual { get; set; }  // Assigned externally
 
         public bool IsSource => Heart != BiomeHeart.None;
 
-        public BiomeTileData(Vector3Int position, int initialTemperature, BiomeHeart heart, TileBase visual)
+        public BiomeTileData(Vector3Int position, int initialTemperature, BiomeHeart heart)
         {
             Position = position;
             Temperature = initialTemperature;
-            Visual = visual;
-
             Type = DetermineBiomeTile(initialTemperature);
             Heart = ValidateHeart(Type, heart);
         }
 
-        public void AddTemperature(int delta, System.Func<int, TileBase> visualResolver)
+        public void AddTemperature(int delta)
         {
             Temperature += delta;
             Type = DetermineBiomeTile(Temperature);
             Heart = IsSource ? Heart : ValidateHeart(Type, BiomeHeart.None);
-            Visual = visualResolver?.Invoke(Temperature);
         }
 
         private static BiomeTile DetermineBiomeTile(int temp)
@@ -42,15 +38,10 @@ namespace Code
         {
             return tile switch
             {
-                BiomeTile.Hot => heart == BiomeHeart.Hot ? BiomeHeart.Hot : BiomeHeart.None,
-                BiomeTile.Cold => heart == BiomeHeart.Cold ? BiomeHeart.Cold : BiomeHeart.None,
+                BiomeTile.Hot => heart == BiomeHeart.Volcano ? BiomeHeart.Volcano : BiomeHeart.None,
+                BiomeTile.Cold => heart == BiomeHeart.Iceberg ? BiomeHeart.Iceberg : BiomeHeart.None,
                 _ => BiomeHeart.None,
             };
         }
     }
-
-    }
-
-
-
-
+}

@@ -9,7 +9,7 @@ namespace Code
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private BiomeVisualSettingsSO visualSettings;
         [SerializeField] private TemperatureLabeler temperatureLabeler;
-        [SerializeField] private int maxTemperature = 3;
+        private int maxTemperature;
 
         private BiomeHeart currentBiomeMode = BiomeHeart.Volcano;
         private Dictionary<Vector3Int, BiomeTileData> biomeTiles = new();
@@ -18,7 +18,36 @@ namespace Code
         private void Awake()
         {
             hexService = new HexGridHelper(); // or inject via Construct() if DI
+            maxTemperature = PowerHolder.Instance.CurrentHeartTemp;
         }
+
+        public void UpdateMaxTemperature()
+        {
+            maxTemperature = PowerHolder.Instance.CurrentHeartTemp;
+            RecreateAllBiomeAreasForCurrentMode();
+            
+            temperatureLabeler?.UpdateLabels();
+        }
+
+        public void SetCurrentBiomeMode(BiomeHeart biomeHeart)
+        {
+            currentBiomeMode = biomeHeart;
+            
+        }
+
+        public void UpdateMap()
+        {
+            UpdateTileVisuals();
+            temperatureLabeler?.UpdateLabels();
+        }
+        private void ClearTemperatures()
+        {
+            foreach (var tile in biomeTiles.Values)
+            {
+                tile.ResetTemperature();
+            }
+        }
+
 
         public IReadOnlyDictionary<Vector3Int, BiomeTileData> GetBiomeTiles() => biomeTiles;
 
@@ -38,7 +67,7 @@ namespace Code
             }
         }
 
-        private void CreateBiomeArea(Vector3Int center, int radius)
+        private void CreateBiomeArea(Vector3Int center, int radius, bool toAdd = true)
         {
             int sourceTemp = currentBiomeMode == BiomeHeart.Volcano ? maxTemperature : -maxTemperature;
             var centerTile = visualSettings.GetCenterTile(currentBiomeMode);
@@ -55,8 +84,13 @@ namespace Code
                     if (!biomeTiles.ContainsKey(pos))
                         biomeTiles[pos] = new BiomeTileData(pos, 0, BiomeHeart.None);
 
-                    biomeTiles[pos].AddTemperature(ringTemp);
+                    if(toAdd) 
+                    {biomeTiles[pos].AddTemperature(ringTemp);}
+                    else
+                    {
+                        biomeTiles[pos].SetTemperature(ringTemp);}
                 }
+                
             }
 
             UpdateTileVisuals();
@@ -72,6 +106,24 @@ namespace Code
 
                 tile.Visual = visualSettings.GetVisualForTemperature(tile.Temperature);
                 tilemap.SetTile(pos, tile.Visual);
+            }
+        }
+        
+        private void RecreateAllBiomeAreasForCurrentMode()
+        {
+            var centers = new List<Vector3Int>();
+
+            foreach (var (pos, tile) in biomeTiles)
+            {
+                if (tile.IsSource && tile.Heart == currentBiomeMode)
+                {
+                    centers.Add(pos);
+                }
+            }
+
+            foreach (var centerPos in centers)
+            {
+                CreateBiomeArea(centerPos, maxTemperature - 1, toAdd: false);
             }
         }
     }

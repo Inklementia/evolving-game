@@ -15,7 +15,7 @@ namespace Code
 
         public TileBase GetVisualForTemperature(int temp)
         {
-            if (temp == 0) return tileGreen;
+            if (Mathf.Abs(temp) <= PowerHolder.Instance.CurrentHabitatValue) return tileGreen;
             return temp > 0 ? tileHot : tileCold;
         }
 

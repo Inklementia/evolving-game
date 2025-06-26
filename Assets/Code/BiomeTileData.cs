@@ -27,14 +27,26 @@ namespace Code
             Type = DetermineBiomeTile(Temperature);
             Heart = IsSource ? Heart : ValidateHeart(Type, BiomeHeart.None);
         }
-
-        private static BiomeTile DetermineBiomeTile(int temp)
+        
+        public void SetTemperature(int delta)
         {
-            if (temp == 0) return BiomeTile.Green;
-            return temp > 0 ? BiomeTile.Hot : BiomeTile.Cold;
+            Temperature = delta;
+            Type = DetermineBiomeTile(Temperature);
+            Heart = IsSource ? Heart : ValidateHeart(Type, BiomeHeart.None);
         }
 
-        private static BiomeHeart ValidateHeart(BiomeTile tile, BiomeHeart heart)
+        public void ResetTemperature()
+        {
+            Temperature = 0;
+        }
+
+        private BiomeTile DetermineBiomeTile(int temp)
+        {
+            if (Mathf.Abs(temp) <= PowerHolder.Instance.CurrentHabitatValue) return BiomeTile.Green;
+            return temp > PowerHolder.Instance.CurrentHabitatValue ? BiomeTile.Hot : BiomeTile.Cold;
+        }
+
+        private BiomeHeart ValidateHeart(BiomeTile tile, BiomeHeart heart)
         {
             return tile switch
             {

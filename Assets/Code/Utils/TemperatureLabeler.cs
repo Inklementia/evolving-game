@@ -19,7 +19,13 @@ namespace Code
         }
 
         public void UpdateLabels()
-        {
+        {    
+            foreach (var label in labelInstances.Values)
+            {
+                Destroy(label);
+            }
+            labelInstances.Clear();
+            
             foreach (var pair in biomeCreator.GetBiomeTiles())
             {
                 var pos = pair.Key;
@@ -37,8 +43,14 @@ namespace Code
                 var tmp = label.GetComponent<TextMeshProUGUI>();
                 if (tmp != null)
                 {
-                    tmp.text = $"<color={ColorFromTemp(data.Temperature)}>{data.Temperature}</color>";
-
+                    if (data.Temperature > 0)
+                    {
+                        tmp.text = $"+{data.Temperature}";
+                    }
+                    else
+                    {
+                        tmp.text = $"{data.Temperature}";
+                    }
                 }
             }
         }

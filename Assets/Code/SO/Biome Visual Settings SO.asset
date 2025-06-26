@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3c26cef30e54ce2bfb612060bf1b1da, type: 3}
   m_Name: Biome Visual Settings SO
   m_EditorClassIdentifier: 
-  tileBlack: {fileID: 11400000, guid: aeec5284e23088f4c80832f2a955d38d, type: 2}
+  tileBlack: {fileID: 11400000, guid: 70134d14ac99625468b4188062ada6db, type: 2}
   tileHot: {fileID: 11400000, guid: 01fac8a02d05af04e9d8d3a839e144d6, type: 2}
   tileCold: {fileID: 11400000, guid: 6b555f33d6950894a824fb76aa33d1a2, type: 2}
   tileGreen: {fileID: 11400000, guid: 21729a9a0a5e1f04cbf4e1e783a086ab, type: 2}

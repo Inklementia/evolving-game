@@ -22,8 +22,9 @@ namespace Code
         {    
             foreach (var label in labelInstances.Values)
             {
-                Destroy(label);
+                    Destroy(label);
             }
+
             labelInstances.Clear();
             
             foreach (var pair in biomeCreator.GetBiomeTiles())
